@@ -1,4 +1,4 @@
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 //
 // This source file is part of the Swift.org open source project
 //
@@ -8,7 +8,7 @@
 // See https://swift.org/LICENSE.txt for license information
 // See https://swift.org/CONTRIBUTORS.txt for the list of Swift project authors
 //
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 /// This file implements SipHash-2-4 and SipHash-1-3
 /// (https://131002.net/siphash/).
 ///
@@ -17,7 +17,7 @@
 ///
 /// * Jean-Philippe Aumasson <jeanphilippe.aumasson@gmail.com>
 /// * Daniel J. Bernstein <djb@cr.yp.to>
-//===----------------------------------------------------------------------===//
+// ===----------------------------------------------------------------------===//
 
 import Foundation
 
@@ -25,14 +25,14 @@ extension Hasher {
     // Stolen from https://github.com/apple/swift/blob/master/stdlib/public/core/SipHash.swift
     // in order to replicate the exact format in bytes
     private struct _State {
-      private var v0: UInt64 = 0x736f6d6570736575
-      private var v1: UInt64 = 0x646f72616e646f6d
-      private var v2: UInt64 = 0x6c7967656e657261
-      private var v3: UInt64 = 0x7465646279746573
-      private var v4: UInt64 = 0
-      private var v5: UInt64 = 0
-      private var v6: UInt64 = 0
-      private var v7: UInt64 = 0
+        private var v0: UInt64 = 0x736F_6D65_7073_6575
+        private var v1: UInt64 = 0x646F_7261_6E64_6F6D
+        private var v2: UInt64 = 0x6C79_6765_6E65_7261
+        private var v3: UInt64 = 0x7465_6462_7974_6573
+        private var v4: UInt64 = 0
+        private var v5: UInt64 = 0
+        private var v6: UInt64 = 0
+        private var v7: UInt64 = 0
     }
 
     static func constantAccrossExecutions() -> Hasher {

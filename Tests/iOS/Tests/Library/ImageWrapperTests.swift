@@ -1,14 +1,16 @@
-import XCTest
+#if !os(Linux)
 @testable import Cache
+import XCTest
 
 final class ImageWrapperTests: XCTestCase {
-  func testImage() {
-    let image = TestHelper.image(size: CGSize(width: 100, height: 100))
-    let wrapper = ImageWrapper(image: image)
+    func testImage() {
+        let image = TestHelper.image(size: CGSize(width: 100, height: 100))
+        let wrapper = ImageWrapper(image: image)
 
-    let data = try! JSONEncoder().encode(wrapper)
-    let anotherWrapper = try! JSONDecoder().decode(ImageWrapper.self, from: data)
+        let data = try! JSONEncoder().encode(wrapper)
+        let anotherWrapper = try! JSONDecoder().decode(ImageWrapper.self, from: data)
 
-    XCTAssertTrue(image.isEqualToImage(anotherWrapper.image))
-  }
+        XCTAssertTrue(image.isEqualToImage(anotherWrapper.image))
+    }
 }
+#endif

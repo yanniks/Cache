@@ -1,15 +1,15 @@
-import XCTest
 @testable import Cache
+import XCTest
 
 final class ObservationTokenTests: XCTestCase {
-  func testCancel() {
-    var cancelled = false
+    func testCancel() {
+        var cancelled = false
 
-    let token = ObservationToken {
-      cancelled = true
+        let token = ObservationToken {
+            cancelled = true
+        }
+
+        token.cancel()
+        XCTAssertTrue(cancelled)
     }
-
-    token.cancel()
-    XCTAssertTrue(cancelled)
-  }
 }

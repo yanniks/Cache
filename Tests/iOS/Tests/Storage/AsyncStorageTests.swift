@@ -1,65 +1,65 @@
-import XCTest
-import Dispatch
 @testable import Cache
+import Dispatch
+import XCTest
 
 final class AsyncStorageTests: XCTestCase {
-  private var storage: AsyncStorage<String, User>!
-  let user = User(firstName: "John", lastName: "Snow")
+    private var storage: AsyncStorage<String, User>!
+    let user = User(firstName: "John", lastName: "Snow")
 
-  override func setUp() {
-    super.setUp()
-    let memory = MemoryStorage<String, User>(config: MemoryConfig())
-    let disk = try! DiskStorage<String, User>(config: DiskConfig(name: "Async Disk"), transformer: TransformerFactory.forCodable(ofType: User.self))
-    let hybrid = HybridStorage<String, User>(memoryStorage: memory, diskStorage: disk)
-    storage = AsyncStorage(storage: hybrid, serialQueue: DispatchQueue(label: "Async"))
-  }
-
-  override func tearDown() {
-    storage.removeAll(completion: { _ in })
-    super.tearDown()
-  }
-
-  func testSetObject() throws {
-    let expectation = self.expectation(description: #function)
-
-    storage.setObject(user, forKey: "user", completion: { _ in })
-    storage.object(forKey: "user", completion: { result in
-      switch result {
-      case .success(let cachedUser):
-        XCTAssertEqual(cachedUser, self.user)
-        expectation.fulfill()
-      default:
-        XCTFail()
-      }
-    })
-
-    wait(for: [expectation], timeout: 1)
-  }
-
-  func testRemoveAll() {
-    let intStorage = storage.transform(transformer: TransformerFactory.forCodable(ofType: Int.self))
-    let expectation = self.expectation(description: #function)
-    given("add a lot of objects") {
-      Array(0..<100).forEach {
-        intStorage.setObject($0, forKey: "key-\($0)", completion: { _ in })
-      }
+    override func setUp() {
+        super.setUp()
+        let memory = MemoryStorage<String, User>(config: MemoryConfig())
+        let disk = try! DiskStorage<String, User>(config: DiskConfig(name: "Async Disk"), transformer: TransformerFactory.forCodable(ofType: User.self))
+        let hybrid = HybridStorage<String, User>(memoryStorage: memory, diskStorage: disk)
+        self.storage = AsyncStorage(storage: hybrid, serialQueue: DispatchQueue(label: "Async"))
     }
 
-    when("remove all") {
-      intStorage.removeAll(completion: { _ in })
+    override func tearDown() {
+        self.storage.removeAll(completion: { _ in })
+        super.tearDown()
     }
 
-    then("all are removed") {
-      intStorage.objectExists(forKey: "key-99", completion: { result in
-        switch result {
-        case .success:
-          XCTFail()
-        default:
-          expectation.fulfill()
+    func testSetObject() throws {
+        let expectation = self.expectation(description: #function)
+
+        self.storage.setObject(self.user, forKey: "user", completion: { _ in })
+        self.storage.object(forKey: "user", completion: { result in
+            switch result {
+            case let .success(cachedUser):
+                XCTAssertEqual(cachedUser, self.user)
+                expectation.fulfill()
+            default:
+                XCTFail()
+            }
+        })
+
+        wait(for: [expectation], timeout: 1)
+    }
+
+    func testRemoveAll() {
+        let intStorage = self.storage.transform(transformer: TransformerFactory.forCodable(ofType: Int.self))
+        let expectation = self.expectation(description: #function)
+        given("add a lot of objects") {
+            for item in Array(0 ..< 100) {
+                intStorage.setObject(item, forKey: "key-\(item)", completion: { _ in })
+            }
         }
-      })
-    }
 
-    wait(for: [expectation], timeout: 1)
-  }
+        when("remove all") {
+            intStorage.removeAll(completion: { _ in })
+        }
+
+        then("all are removed") {
+            intStorage.objectExists(forKey: "key-99", completion: { result in
+                switch result {
+                case .success:
+                    XCTFail()
+                default:
+                    expectation.fulfill()
+                }
+            })
+        }
+
+        wait(for: [expectation], timeout: 1)
+    }
 }
